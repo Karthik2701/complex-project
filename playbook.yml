@@ -1,0 +1,37 @@
+---
+- name: playbook to install the packages
+  hosts: all
+  become: true
+  tasks:
+    - name: update the packages
+      apt:
+        name: '*'
+        state: present
+    - name: install git package
+      apt :
+        name: git
+        state: present
+    - name: install docker
+      apt:
+        name: docker.io
+        state: present
+    - name: ensure docker is started and enabled
+      service:
+        name: docker
+        state: started
+        enabled: yes
+    - name: install SSM agent
+      command: sudo yum install https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -y   
+    - name: ensure the ssm agent is started
+      command: sudo systemctl start amazon-ssm-agent
+    - name: install cloudwatch agent
+      command: sudo yum install https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm -y
+      command: sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a start
+      command: sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+    - name: install aws inspector
+      get_url:
+        url: https://inspector-agent.amazonaws.com/linux/latest/install
+        dest: /tmp/aws_inspector_agent_installer
+    - name: install aws inspector
+      shell: sudo bash /tmp/aws_inspector_agent_installer     
+
