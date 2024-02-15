@@ -17,9 +17,10 @@ source "amazon-ebs" "ubuntu" {
 build {
     name = "my-first-build"
     sources = ["source.amazon-ebs.ubuntu"]
-}
+
 provisioner "ansible" {
       playbook_file   = "./playbook.yml"
       user            = "ubuntu"
       use_proxy       = false
+  }
 }
